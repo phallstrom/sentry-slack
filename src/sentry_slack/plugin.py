@@ -62,6 +62,10 @@ class SlackOptionsForm(notify.NotificationConfigurationForm):
         }),
         required=False
     )
+    suppress_project_name = forms.BooleanField(
+        help_text='Do not display project name in notification',
+        required=False,
+    )
     include_tags = forms.BooleanField(
         help_text='Include tags with notifications',
         required=False,
@@ -166,11 +170,12 @@ class SlackPlugin(notify.NotificationPlugin):
                 'short': False,
             })
 
-        fields.append({
-            'title': 'Project',
-            'value': project_name,
-            'short': True,
-        })
+        if not self.get_option('suppress_project_name', project):
+            fields.append({
+                'title': 'Project',
+                'value': project_name,
+                'short': True,
+            })
 
         if self.get_option('include_rules', project):
             rules = []
